@@ -1,0 +1,132 @@
+
+import type { ElementType } from 'react';
+
+export type View = 'home' | 'roadmap' | 'careerPath' | 'quiz';
+
+export interface Roadmap {
+  id: string;
+  name: string;
+  description: string;
+  icon: ElementType;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+}
+
+export interface MajorSuggestion {
+  majorName: string;
+  description: string;
+  coreSkills: string[];
+}
+
+export interface CareerSuggestion {
+  careerName: string;
+  description: string;
+  suitability: string;
+}
+
+export interface MajorDetails {
+    trainingObjectives: string;
+    mainSubjects: string[];
+    electiveSubjects: string[];
+    curriculumRoadmap: string[];
+    careerOrientations: string[];
+}
+
+// Các kiểu dữ liệu mới cho Trắc nghiệm Động
+export interface QuizQuestion {
+    question: string;
+    options: string[];
+}
+
+export interface NextQuizStep {
+    question?: string;
+    options?: string[];
+    isComplete: boolean;
+}
+
+export interface QuizTurn {
+    question: string;
+    answer: string;
+}
+
+export interface QuizRecommendation {
+    careerName: string;
+    description: string;
+    suitability: string;
+    suggestedMajors: string[];
+}
+
+export interface IUser {
+  _id: string;
+  fullName: string;
+  userId: string;
+  avatarUrl: string;
+  mssv?: string;
+  department?: string; // Khoa
+  class?: string; // Lớp
+  dateOfBirth?: string; // Ngày sinh
+  phoneNumber?: string; // Số điện thoại
+  bio?: string; // Mô tả ngắn
+}
+
+// Types for CV Generator
+export interface CVEducation {
+    id: string;
+    school: string;
+    degree: string;
+    fieldOfStudy?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+}
+
+export interface CVExperience {
+    id: string;
+    company: string;
+    jobTitle: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+}
+
+export interface CVSkill {
+    id: string;
+    skillName: string;
+    level?: string;
+}
+
+export interface CVProject {
+    id: string;
+    projectName: string;
+    description?: string;
+    link?: string;
+}
+
+export interface CVTemplate {
+  id: string;
+  name: string;
+  thumbnailUrl: string;
+  componentName: string;
+}
+
+export interface CVData {
+    _id?: string;
+    userId?: string;
+    template: string; // e.g., 'classic', 'modern'
+    personalDetails: {
+        fullName: string;
+        jobTitle: string;
+        email: string;
+        phoneNumber: string;
+        address: string;
+        avatarUrl: string;
+    };
+    summary: string;
+    education: CVEducation[];
+    experience: CVExperience[];
+    skills: CVSkill[];
+    projects: CVProject[];
+}

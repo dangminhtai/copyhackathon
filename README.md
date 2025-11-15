@@ -1,73 +1,77 @@
-
 # Đại học Thông minh - Trợ lý định hướng AI
 
-Một ứng dụng web sử dụng AI để giúp sinh viên lựa chọn chuyên ngành dựa trên lộ trình học tập hoặc định hướng nghề nghiệp dựa trên các môn học yêu thích. Được thiết kế để trao quyền cho sinh viên đưa ra quyết định sáng suốt về tương lai học tập và sự nghiệp.
+Một ứng dụng web full-stack sử dụng AI để giúp sinh viên lựa chọn chuyên ngành và định hướng nghề nghiệp.
 
-## Cấu trúc thư mục
+## Kiến trúc
 
-Dự án được cấu trúc để tách biệt các mối quan tâm (separation of concerns), giúp dễ dàng quản lý và mở rộng.
+Dự án được xây dựng theo kiến trúc monorepo-style với hai phần chính:
 
-```
-.
-├── public/               # Chứa các tài sản tĩnh
-├── src/
-│   ├── components/       # Các React components
-│   │   ├── common/       # Components tái sử dụng (Button, Spinner)
-│   │   ├── CareerPathfinder.tsx
-│   │   ├── ChatBot.tsx
-│   │   ├── Header.tsx
-│   │   ├── Home.tsx
-│   │   └── RoadmapSelector.tsx
-│   ├── config/           # Tập trung toàn bộ cấu hình
-│   │   ├── prompt/       # Cấu hình prompt cho Gemini AI
-│   │   ├── api.ts
-│   │   ├── constants.ts
-│   │   ├── errors.ts
-│   │   ├── index.ts
-│   │   └── ui.ts
-│   ├── services/         # Logic nghiệp vụ, gọi API
-│   │   ├── chatService.ts
-│   │   └── geminiService.ts
-│   ├── App.tsx           # Component gốc của ứng dụng
-│   ├── index.tsx         # Điểm vào của ứng dụng React
-│   └── types.ts          # Định nghĩa các kiểu TypeScript
-├── .env.example          # Tệp môi trường mẫu
-├── index.html            # Tệp HTML gốc
-├── package.json
-└── tsconfig.json
-```
+-   `client/`: Ứng dụng Frontend được xây dựng bằng React, TypeScript và Vite.
+-   `server/`: Ứng dụng Backend được xây dựng bằng Node.js, Express, MongoDB và tích hợp Gemini AI.
 
 ## Cài đặt và Chạy dự án
 
-1.  **Clone a repository:**
-    ```bash
-    git clone https://your-repository-url.git
-    cd your-project-directory
-    ```
+Bạn cần chạy cả client và server trên hai cửa sổ terminal khác nhau.
 
-2.  **Cài đặt dependencies:**
-    ```bash
-    npm install
-    ```
+### 1. Cài đặt Backend (Server)
 
-3.  **Thiết lập biến môi trường:**
-    Tạo một tệp `.env` ở thư mục gốc và thêm API key của bạn vào:
-    ```env
-    VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
-    ```
+a. **Di chuyển vào thư mục server:**
+```bash
+cd server
+```
 
-4.  **Chạy ứng dụng:**
-    ```bash
-    npm run dev
-    ```
-    Ứng dụng sẽ có sẵn tại `http://localhost:3000`.
+b. **Cài đặt dependencies:**
+```bash
+npm install
+```
 
-## Cấu hình
+c. **Thiết lập biến môi trường:**
+Tạo một file `.env` trong thư mục `server` và thêm các biến sau:
+```env
+# Link kết nối tới cơ sở dữ liệu MongoDB của bạn
+MONGO_URI=mongodb+srv://<user>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority
 
-Toàn bộ cấu hình được tập trung trong thư mục `src/config` để tránh hardcode và dễ dàng quản lý.
+# Một chuỗi ký tự bí mật, ngẫu nhiên và phức tạp để mã hóa/giải mã JWT
+# LỖI 401 UNAUTHORIZED SẼ XẢY RA NẾU BIẾN NÀY BỊ THIẾU!
+JWT_SECRET=DAY_LA_MOT_CHUOI_BI_MAT_RAT_QUAN_TRONG_HAY_THAY_THE_NO
 
--   **`config/api.ts`**: Cấu hình liên quan đến API (keys, endpoints).
--   **`config/errors.ts`**: Các thông báo lỗi sử dụng trong ứng dụng.
--   **`config/ui.ts`**: Các chuỗi văn bản, nhãn hiển thị trên giao diện người dùng.
--   **`config/constants.ts`**: Các hằng số, dữ liệu tĩnh như danh sách lộ trình, môn học.
--   **`config/prompt/`**: Chứa các file cấu hình chi tiết cho các prompt gửi đến Gemini AI, tách biệt logic prompt khỏi service.
+# API Key cho Google Gemini
+API_KEY=YOUR_GEMINI_API_KEY_HERE
+```
+
+d. **Chạy server:**
+```bash
+npm start
+```
+Server sẽ chạy trên `http://localhost:5000`.
+
+### 2. Cài đặt Frontend (Client)
+
+a. **Mở một terminal mới và di chuyển vào thư mục client:**
+```bash
+cd client
+```
+
+b. **Cài đặt dependencies:**
+```bash
+npm install
+```
+
+c. **Thiết lập biến môi trường:**
+Tạo một file `.env` trong thư mục `client` và thêm API key của bạn vào:
+```env
+# API Key này dùng cho các tính năng AI chạy trực tiếp trên client (ví dụ: Did you know?)
+VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+```
+
+d. **Chạy client:**
+```bash
+npm run dev
+```
+Ứng dụng client sẽ có sẵn tại một địa chỉ do Vite cung cấp (thường là `http://localhost:5173`). Vite đã được cấu hình proxy để tự động chuyển tiếp các yêu cầu `/api` đến server backend.
+
+## Gỡ lỗi thường gặp
+
+-   **Lỗi `401 Unauthorized`**: Đảm bảo bạn đã tạo file `.env` trong thư mục `server` và đã cung cấp một giá trị cho `JWT_SECRET`.
+-   **Lỗi kết nối MongoDB**: Kiểm tra lại chuỗi `MONGO_URI` trong file `.env` của server.
+-   **Lỗi API Key**: Đảm bảo bạn đã cung cấp `API_KEY` trong `.env` của server và `VITE_GEMINI_API_KEY` trong `.env` của client.
