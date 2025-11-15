@@ -1,7 +1,9 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { MajorSuggestion, CareerSuggestion } from '../types';
 
+// Khởi tạo AI client một lần.
+// Ứng dụng sẽ báo lỗi nếu process.env.API_KEY không được thiết lập.
+// Vui lòng đảm bảo bạn đã tạo file .env và thêm API key vào đó.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const suggestMajorsForRoadmap = async (roadmapName: string): Promise<MajorSuggestion[]> => {
@@ -37,11 +39,18 @@ export const suggestMajorsForRoadmap = async (roadmapName: string): Promise<Majo
     });
 
     const jsonText = response.text.trim();
+    if (!jsonText.startsWith('[') || !jsonText.endsWith(']')) {
+        console.error("Dữ liệu trả về không phải là một mảng JSON hợp lệ:", jsonText);
+        throw new Error("Định dạng phản hồi từ AI không đúng. Vui lòng thử lại.");
+    }
     const suggestions: MajorSuggestion[] = JSON.parse(jsonText);
     return suggestions;
   } catch (error) {
     console.error("Lỗi khi gọi Gemini API để gợi ý chuyên ngành:", error);
-    throw new Error("Không thể nhận được gợi ý chuyên ngành. Vui lòng thử lại.");
+    if (error instanceof Error && (error.message.includes("API key not valid") || error.message.includes("API Key"))) {
+        throw new Error("API Key không hợp lệ hoặc bị thiếu. Vui lòng kiểm tra lại file .env của bạn.");
+    }
+    throw new Error("Không thể nhận được gợi ý chuyên ngành. Vui lòng thử lại sau.");
   }
 };
 
@@ -77,10 +86,17 @@ export const suggestCareersForSubjects = async (subjectNames: string[]): Promise
     });
     
     const jsonText = response.text.trim();
+    if (!jsonText.startsWith('[') || !jsonText.endsWith(']')) {
+        console.error("Dữ liệu trả về không phải là một mảng JSON hợp lệ:", jsonText);
+        throw new Error("Định dạng phản hồi từ AI không đúng. Vui lòng thử lại.");
+    }
     const suggestions: CareerSuggestion[] = JSON.parse(jsonText);
     return suggestions;
   } catch (error) {
     console.error("Lỗi khi gọi Gemini API để gợi ý nghề nghiệp:", error);
-    throw new Error("Không thể nhận được gợi ý nghề nghiệp. Vui lòng thử lại.");
+    if (error instanceof Error && (error.message.includes("API key not valid") || error.message.includes("API Key"))) {
+        throw new Error("API Key không hợp lệ hoặc bị thiếu. Vui lòng kiểm tra lại file .env của bạn.");
+    }
+    throw new Error("Không thể nhận được gợi ý nghề nghiệp. Vui lòng thử lại sau.");
   }
 };
