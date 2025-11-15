@@ -37,6 +37,12 @@ JWT_SECRET=DAY_LA_MOT_CHUOI_BI_MAT_RAT_QUAN_TRONG_HAY_THAY_THE_NO
 
 # API Key cho Google Gemini
 API_KEY=YOUR_GEMINI_API_KEY_HERE
+
+# (Tùy chọn) Cấu hình để gửi email (ví dụ: quên mật khẩu)
+# Sử dụng Gmail, bạn cần tạo "Mật khẩu ứng dụng" (App Password)
+# Xem hướng dẫn tại: https://support.google.com/accounts/answer/185833
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-gmail-app-password
 ```
 
 d. **Chạy server:**
@@ -75,3 +81,4 @@ npm run dev
 -   **Lỗi `401 Unauthorized`**: Đảm bảo bạn đã tạo file `.env` trong thư mục `server` và đã cung cấp một giá trị cho `JWT_SECRET`.
 -   **Lỗi kết nối MongoDB**: Kiểm tra lại chuỗi `MONGO_URI` trong file `.env` của server.
 -   **Lỗi API Key**: Đảm bảo bạn đã cung cấp `API_KEY` trong `.env` của server và `VITE_GEMINI_API_KEY` trong `.env` của client.
+-   **Lỗi gửi Email**: Đảm bảo bạn đã cấu hình `EMAIL_USER` và `EMAIL_PASS` trong file `.env` của server. Nếu dùng Gmail, `EMAIL_PASS` phải là một "Mật khẩu ứng dụng" (App Password), không phải mật khẩu đăng nhập thông thường của bạn.

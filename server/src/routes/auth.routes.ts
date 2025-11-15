@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { Login } from '../models/login.model';
 import { User } from '../models/user.model';
 import { generateUniqueUserId, generateDefaultAvatar } from '../utils/user.utils';
-import { generateOTP } from '../utils/auth.utils';
+import { generateOTP, sendPasswordResetEmail } from '../utils/auth.utils';
 
 const router = express.Router();
 
@@ -68,22 +68,24 @@ router.post('/forgot-password', async (req, res) => {
     const { gmail } = req.body;
     try {
         const login = await Login.findOne({ gmail });
-        if (!login) {
-            return res.status(404).json({ message: 'Không tìm thấy tài khoản với email này.' });
+        
+        // Để tránh bị dò quét email, luôn trả về thông báo thành công.
+        // Việc gửi email chỉ thực hiện nếu tìm thấy tài khoản.
+        if (login) {
+            const otp = generateOTP();
+            login.passwordResetToken = otp;
+            login.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
+            await login.save();
+            
+            // Gửi email chứa mã OTP
+            await sendPasswordResetEmail(login.gmail, otp);
         }
 
-        const otp = generateOTP();
-        login.passwordResetToken = otp;
-        login.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
-        await login.save();
-
-        // **Mô phỏng gửi email**: In OTP ra console của server
-        console.log(`Yêu cầu đặt lại mật khẩu cho ${gmail}. Mã OTP của bạn là: ${otp}`);
-
-        res.status(200).json({ message: 'Yêu cầu đặt lại mật khẩu đã được gửi.' });
+        res.status(200).json({ message: 'Nếu tài khoản của bạn tồn tại trong hệ thống, một email đặt lại mật khẩu đã được gửi.' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Lỗi server.' });
+        console.error("Lỗi trong quá trình quên mật khẩu:", error);
+        // Trả về một lỗi chung để không tiết lộ thông tin nội bộ
+        res.status(500).json({ message: 'Đã có lỗi xảy ra phía máy chủ.' });
     }
 });
 

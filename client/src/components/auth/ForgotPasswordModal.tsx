@@ -39,7 +39,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
         setMessage(null);
         try {
             const data = await forgotPassword(gmail);
-            setMessage(data.message + " Vui lòng kiểm tra console của server để nhận mã OTP.");
+            setMessage(data.message + " Vui lòng kiểm tra hộp thư email của bạn.");
             setStep('reset');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Lỗi không xác định');
