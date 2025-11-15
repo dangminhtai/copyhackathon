@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import BackButton from './common/BackButton';
 import { Building2, LocateFixed, Loader2, AlertCircle, MapPin, ThumbsUp, ThumbsDown, GraduationCap, School as SchoolIcon } from 'lucide-react';

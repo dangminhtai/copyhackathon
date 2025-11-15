@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { protect } from '../middleware/auth.middleware';
 import Exploration from '../models/exploration.model';

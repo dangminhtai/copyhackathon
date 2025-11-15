@@ -1,4 +1,3 @@
-
 // UI messages and labels configuration
 export const UI_MESSAGES = {
   // Career Pathfinder

@@ -1,4 +1,3 @@
-
 import apiClient from './apiClient';
 import { MajorSuggestion, CareerSuggestion, MajorDetails, QuizRecommendation, QuizTurn, NextQuizStep, School } from '../class/types';
 

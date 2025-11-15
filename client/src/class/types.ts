@@ -1,4 +1,3 @@
-
 import type { ElementType } from 'react';
 
 export type View = 'home' | 'roadmap' | 'careerPath' | 'quiz' | 'university';

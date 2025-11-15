@@ -1,4 +1,3 @@
-
 import { GenerateContentParameters } from "@google/genai";
 import { ai, callAIAndParseJSON } from './gemini';
 import { MajorSuggestion, CareerSuggestion, MajorDetails, School } from "../../../client/src/class/types";
