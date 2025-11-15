@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -32,7 +31,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ currentUser, onLogout }) =>
                 <button
                   key={option.name}
                   onClick={() => setTheme(option.name)}
-                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${theme === option.name ? 'bg-white dark:bg-slate-900 shadow' : 'hover:bg-gray-300/50 dark:hover:bg-slate-600/50'}`}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${theme === option.name ? 'bg-white dark:bg-slate-900 shadow text-slate-800 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-gray-300/50 dark:hover:bg-slate-600/50'}`}
                   aria-label={`Set theme to ${option.name}`}
                 >
                   {option.icon}
