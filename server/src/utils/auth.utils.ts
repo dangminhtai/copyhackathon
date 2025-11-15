@@ -30,10 +30,17 @@ const transporter =
  * @param otp The 6-digit one-time password.
  */
 export const sendPasswordResetEmail = async (to: string, otp: string): Promise<void> => {
-    // Nếu transporter không được cấu hình, fallback về console.log
+    // Nếu transporter không được cấu hình, ném ra lỗi để báo cho người dùng biết chức năng không khả dụng.
     if (!transporter) {
-        console.log(`Yêu cầu đặt lại mật khẩu cho ${to}. Do email chưa được cấu hình, mã OTP của bạn là: ${otp}`);
-        return;
+        console.warn(`
+            ================================================================================
+            CẢNH BÁO: DỊCH VỤ EMAIL CHƯA ĐƯỢC CẤU HÌNH.
+            Chức năng quên mật khẩu sẽ không hoạt động.
+            Để gỡ lỗi, mã OTP cho ${to} là: ${otp}
+            Trong môi trường production, hãy cấu hình EMAIL_USER và EMAIL_PASS trong file .env.
+            ================================================================================
+        `);
+        throw new Error('Dịch vụ email chưa được cấu hình. Chức năng này hiện không khả dụng.');
     }
 
     const mailOptions = {
