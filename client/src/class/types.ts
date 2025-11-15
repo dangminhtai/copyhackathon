@@ -168,3 +168,24 @@ export interface School {
     weaknesses: string[];
     uri: string;
 }
+
+// --- Các interface cho Chat ---
+export interface ChatMessage {
+    text: string;
+    role: 'user' | 'model';
+    timestamp: Date;
+}
+
+export interface IMessagePart {
+    text?: string;
+    fileData?: {
+        mimeType?: string;
+        fileUri?: string;
+    };
+}
+
+export interface IChatTurn {
+    user: { parts: IMessagePart[] };
+    model: { parts: IMessagePart[] };
+    createdAt?: string; // Sẽ là string khi nhận từ API
+}

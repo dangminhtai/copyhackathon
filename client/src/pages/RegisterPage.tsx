@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Input from '../components/common/Input';
 import { UserIcon, LockIcon, IdCardIcon, EnvelopeIcon } from '../components/icons';
 import { Eye, EyeOff } from 'lucide-react';
@@ -88,61 +88,3 @@ const RegisterPage: React.FC = () => {
                     <motion.div 
                         initial={{ opacity: 0, height: 0, marginTop: 0 }} 
                         animate={{ opacity: 1, height: 'auto', marginTop: '1.5rem' }} 
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                    >
-                        <Input
-                            id="mssv"
-                            label="Student ID"
-                            type="text"
-                            placeholder="Type your student ID"
-                            value={mssv}
-                            onChange={(e) => setMssv(e.target.value)}
-                            icon={<IdCardIcon className="w-5 h-5" />}
-                        />
-                    </motion.div>
-                )}
-                </AnimatePresence>
-
-                <Input
-                    id="password"
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Type your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    icon={<LockIcon className="w-5 h-5" />}
-                    suffixIcon={
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="focus:outline-none">
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                    }
-                />
-                <button
-                    type="submit"
-                    disabled={isLoading || !!success}
-                    className="w-full text-white font-bold py-3 px-4 rounded-full bg-gradient-to-r from-sky-400 to-pink-500 hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
-                >
-                    {isLoading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : 'SIGN UP'}
-                </button>
-                {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
-                {success && <p className="text-green-500 text-sm mt-2 text-center">{success}</p>}
-            </form>
-
-            <div className="mt-6 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Already have an account?{' '}
-                    <button
-                        onClick={() => navigate('/login')}
-                        className="font-semibold text-purple-600 hover:underline dark:text-purple-400"
-                    >
-                        LOGIN
-                    </button>
-                </p>
-            </div>
-        </motion.div>
-    );
-};
-
-export default RegisterPage;
