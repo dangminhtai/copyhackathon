@@ -202,7 +202,7 @@ Dự án này được cấp phép theo Giấy phép MIT.
 Được tạo bởi team **Anh em Sài Gòn - Đội thi Hackathon HCMUTE** 
 Link dự án: [https://github.com/dangminhtai/daihocthongminh](https://github.com/dangminhtai/daihocthongminh)
 
-### Thành viên nhóm
+### Các thành viên trong đội
 
 #### 1. Đặng Minh Tài
 <p align="center">
