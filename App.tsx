@@ -1,9 +1,12 @@
+
 import React, { useState, useCallback } from 'react';
 import Home from './components/Home';
 import RoadmapSelector from './components/RoadmapSelector';
 import CareerPathfinder from './components/CareerPathfinder';
 import Header from './components/Header';
+import ChatBot from './components/ChatBot';
 import { View } from './types';
+import { UI_MESSAGES } from './config/ui';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -33,8 +36,9 @@ const App: React.FC = () => {
         </div>
       </main>
       <footer className="text-center py-4 text-sm text-slate-500">
-        <p>&copy; 2024 Đại học Thông minh. Phát triển bởi chuyên gia AI.</p>
+        <p>{UI_MESSAGES.FOOTER.COPYRIGHT}</p>
       </footer>
+      <ChatBot />
     </div>
   );
 };

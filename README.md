@@ -1,20 +1,73 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# Run and deploy your AI Studio app
+# Đại học Thông minh - Trợ lý định hướng AI
 
-This contains everything you need to run your app locally.
+Một ứng dụng web sử dụng AI để giúp sinh viên lựa chọn chuyên ngành dựa trên lộ trình học tập hoặc định hướng nghề nghiệp dựa trên các môn học yêu thích. Được thiết kế để trao quyền cho sinh viên đưa ra quyết định sáng suốt về tương lai học tập và sự nghiệp.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Qkhx4aHrF1nnrKE7Ho9f6FNMof_mxmv-
+## Cấu trúc thư mục
 
-## Run Locally
+Dự án được cấu trúc để tách biệt các mối quan tâm (separation of concerns), giúp dễ dàng quản lý và mở rộng.
 
-**Prerequisites:**  Node.js
+```
+.
+├── public/               # Chứa các tài sản tĩnh
+├── src/
+│   ├── components/       # Các React components
+│   │   ├── common/       # Components tái sử dụng (Button, Spinner)
+│   │   ├── CareerPathfinder.tsx
+│   │   ├── ChatBot.tsx
+│   │   ├── Header.tsx
+│   │   ├── Home.tsx
+│   │   └── RoadmapSelector.tsx
+│   ├── config/           # Tập trung toàn bộ cấu hình
+│   │   ├── prompt/       # Cấu hình prompt cho Gemini AI
+│   │   ├── api.ts
+│   │   ├── constants.ts
+│   │   ├── errors.ts
+│   │   ├── index.ts
+│   │   └── ui.ts
+│   ├── services/         # Logic nghiệp vụ, gọi API
+│   │   ├── chatService.ts
+│   │   └── geminiService.ts
+│   ├── App.tsx           # Component gốc của ứng dụng
+│   ├── index.tsx         # Điểm vào của ứng dụng React
+│   └── types.ts          # Định nghĩa các kiểu TypeScript
+├── .env.example          # Tệp môi trường mẫu
+├── index.html            # Tệp HTML gốc
+├── package.json
+└── tsconfig.json
+```
 
+## Cài đặt và Chạy dự án
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1.  **Clone a repository:**
+    ```bash
+    git clone https://your-repository-url.git
+    cd your-project-directory
+    ```
+
+2.  **Cài đặt dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Thiết lập biến môi trường:**
+    Tạo một tệp `.env` ở thư mục gốc và thêm API key của bạn vào:
+    ```env
+    VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+    ```
+
+4.  **Chạy ứng dụng:**
+    ```bash
+    npm run dev
+    ```
+    Ứng dụng sẽ có sẵn tại `http://localhost:3000`.
+
+## Cấu hình
+
+Toàn bộ cấu hình được tập trung trong thư mục `src/config` để tránh hardcode và dễ dàng quản lý.
+
+-   **`config/api.ts`**: Cấu hình liên quan đến API (keys, endpoints).
+-   **`config/errors.ts`**: Các thông báo lỗi sử dụng trong ứng dụng.
+-   **`config/ui.ts`**: Các chuỗi văn bản, nhãn hiển thị trên giao diện người dùng.
+-   **`config/constants.ts`**: Các hằng số, dữ liệu tĩnh như danh sách lộ trình, môn học.
+-   **`config/prompt/`**: Chứa các file cấu hình chi tiết cho các prompt gửi đến Gemini AI, tách biệt logic prompt khỏi service.
