@@ -1,4 +1,4 @@
-# HACKATHON HCMUTE với chủ đề "Đại học thông minh - nâng tầm giáo dục\*\*
+# HACKATHON HCMUTE với chủ đề "Đại học thông minh - nâng tầm giáo dục"
 
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/) [![Node.js](https://img.shields.io/badge/Node.js-20.x-green?logo=nodedotjs)](https://nodejs.org/) [![Vite](https://img.shields.io/badge/Vite-7.x-purple?logo=vite)](https://vitejs.dev/) [![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://www.mongodb.com/) [![Gemini AI](https://img.shields.io/badge/Gemini_AI-blueviolet?logo=google&logoColor=white)](https://ai.google.dev/)
 
@@ -224,6 +224,7 @@ Link dự án: [https://github.com/dangminhtai/daihocthongminh](https://github.c
   <a href="https://www.facebook.com/tan.nguyenthe.52090"><img src="https://img.shields.io/badge/Facebook-1877F2?logo=facebook&logoColor=white&style=for-the-badge"/></a>
   <a href="https://github.com/iHateIT665"><img src="https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white&style=for-the-badge"/></a>
 </p>
+
 #### 4. Lưu Quang Tiến
 <p align="center">
   <a href="23110157@student.hcmute.edu.vn"><img src="https://img.shields.io/badge/Gmail-D14836?logo=gmail&logoColor=white&style=for-the-badge"/></a>
