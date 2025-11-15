@@ -10,8 +10,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CVPreview from '../components/CVPreview';
 import TemplateSelector from '../components/cv/TemplateSelector';
+import TemplateEditor from '../components/cv/TemplateEditor'; // Import editor
 import { UI_MESSAGES } from '../config/ui';
-import { Plus, Trash2, Wand2, Loader2, Download, BrainCircuit } from 'lucide-react';
+import { Plus, Trash2, Wand2, Loader2, Download, BrainCircuit, LayoutTemplate, FolderSearch } from 'lucide-react';
 
 const placeholderUser: IUser = { _id: 'p', fullName: 'P', userId: 'p', avatarUrl: '' };
 
@@ -22,11 +23,12 @@ const CVGeneratorPage: React.FC = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || JSON.stringify(placeholderUser));
     
     const [cvData, setCVData] = useState<CVData | null>(null);
-    const [templates, setTemplates] = useState<CVTemplate[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
     const [aiLoading, setAiLoading] = useState<{ type: string, index?: number } | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isTemplateBrowserOpen, setIsTemplateBrowserOpen] = useState(false);
+    const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
     const saveTimeoutRef = useRef<number | null>(null);
     const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,9 +36,8 @@ const CVGeneratorPage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [cv, temps] = await Promise.all([getCVData(), getCVTemplates()]);
+                const cv = await getCVData();
                 setCVData(cv);
-                setTemplates(temps);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -66,7 +67,7 @@ const CVGeneratorPage: React.FC = () => {
                     setError(err.message);
                     setSaveStatus('idle');
                 });
-        }, 1500); // 1.5 second debounce
+        }, 1500);
 
         return () => {
             if (saveTimeoutRef.current) {
@@ -80,10 +81,11 @@ const CVGeneratorPage: React.FC = () => {
         if (!element) return;
         setIsLoading(true);
         try {
-            const canvas = await html2canvas(element, { scale: 2, useCORS: true, scrollY: -window.scrollY });
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true, scrollY: 0, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
             const imgProps = pdf.getImageProperties(imgData);
             const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
             
@@ -91,13 +93,13 @@ const CVGeneratorPage: React.FC = () => {
             let position = 0;
             
             pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
+            heightLeft -= pdfHeight;
 
             while (heightLeft > 0) {
-                position = position - pdf.internal.pageSize.getHeight();
+                position = position - pdfHeight;
                 pdf.addPage();
                 pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
+                heightLeft -= pdfHeight;
             }
             pdf.save(`${cvData?.personalDetails.fullName || 'cv'}_export.pdf`);
         } catch(e) {
@@ -114,7 +116,7 @@ const CVGeneratorPage: React.FC = () => {
         setError(null);
         try {
             const rewrittenCV = await rewriteFullCV(cvData);
-            setCVData(rewrittenCV);
+            setCVData(prev => prev ? { ...prev, ...rewrittenCV, template: prev.template } : null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Lỗi khi viết lại CV');
         } finally {
@@ -150,17 +152,17 @@ const CVGeneratorPage: React.FC = () => {
         }
     }
     
-    const handleInputChange = (section: keyof CVData | 'personalDetails', field: string, value: string) => {
+    const handleInputChange = (section: keyof Omit<CVData, 'template'> | 'personalDetails', field: string, value: any) => {
         setCVData(prev => {
             if (!prev) return null;
             if (section === 'personalDetails') {
                 return { ...prev, personalDetails: { ...prev.personalDetails, [field]: value } };
             }
-            if (typeof prev[section] === 'object' && prev[section] !== null && !Array.isArray(prev[section])) {
+            if (typeof prev[section as keyof CVData] === 'object' && !Array.isArray(prev[section as keyof CVData])) {
                 const updatedSection = { ...(prev as any)[section], [field]: value };
                 return { ...prev, [section]: updatedSection };
             }
-             return { ...prev, [section]: value };
+             return { ...prev, [section as keyof CVData]: value };
         });
     };
     
@@ -209,9 +211,7 @@ const CVGeneratorPage: React.FC = () => {
         }
     };
     
-    const handleAvatarClick = () => {
-        avatarInputRef.current?.click();
-    };
+    const handleAvatarClick = () => avatarInputRef.current?.click();
 
     const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -221,6 +221,19 @@ const CVGeneratorPage: React.FC = () => {
                 handleInputChange('personalDetails', 'avatarUrl', reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleTemplateSelect = (template: CVTemplate) => {
+        if (template && cvData) {
+            setCVData({ ...cvData, template: template });
+        }
+        setIsTemplateBrowserOpen(false);
+    };
+
+    const handleSaveNewTemplate = (newTemplate: CVTemplate) => {
+        if (cvData) {
+            setCVData({ ...cvData, template: newTemplate });
         }
     };
 
@@ -257,11 +270,24 @@ const CVGeneratorPage: React.FC = () => {
                         <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md h-full max-h-[75vh] overflow-y-auto">
                            <h2 className="text-xl font-bold mb-4 dark:text-slate-100">{UI_MESSAGES.CV_GENERATOR.FORM_TITLE}</h2>
                             <div className="space-y-6">
-                               <TemplateSelector
-                                    templates={templates}
-                                    currentTemplateId={cvData.template}
-                                    onSelectTemplate={(templateId) => handleInputChange('template', 'template', templateId)}
-                                />
+                                <div>
+                                    <h3 className="font-semibold mb-2 dark:text-slate-300">{UI_MESSAGES.CV_GENERATOR.TEMPLATE_SECTION_TITLE}</h3>
+                                    <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                                        <div className="w-16 h-20 bg-slate-200 dark:bg-slate-600 rounded flex-shrink-0 flex items-center justify-center">
+                                            <LayoutTemplate className="w-8 h-8 text-slate-500"/>
+                                        </div>
+                                        <div className="flex-grow">
+                                            <p className="font-bold text-sm dark:text-white">{cvData.template.name}</p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">{cvData.template.description}</p>
+                                        </div>
+                                        <button onClick={() => setIsTemplateBrowserOpen(true)} className="ml-4 flex-shrink-0 flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-lg shadow-sm border dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600">
+                                            <FolderSearch className="w-4 h-4"/>Duyệt mẫu
+                                        </button>
+                                        <button onClick={() => setIsTemplateEditorOpen(true)} className="flex-shrink-0 flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-lg shadow-sm border dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600">
+                                            <Plus className="w-4 h-4"/>Tạo mẫu
+                                        </button>
+                                    </div>
+                                </div>
                                 <input type="file" ref={avatarInputRef} onChange={handleAvatarFileChange} accept="image/*" className="hidden" />
                                 <div>
                                     <h3 className="font-semibold mb-2 dark:text-slate-300">Thông tin cá nhân</h3>
@@ -275,7 +301,7 @@ const CVGeneratorPage: React.FC = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold mb-2 dark:text-slate-300">Tóm tắt</h3>
-                                     <textarea data-field-id="summary" value={cvData.summary} onChange={e => setCVData({...cvData, summary: e.target.value})} placeholder="Viết tóm tắt về bản thân..." rows={4} className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"></textarea>
+                                     <textarea data-field-id="summary" value={cvData.summary} onChange={e => handleInputChange('summary', 'summary', e.target.value)} placeholder="Viết tóm tắt về bản thân..." rows={4} className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"></textarea>
                                      <button onClick={handleGenerateSummary} disabled={!!aiLoading} className="mt-2 flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 disabled:text-gray-400">
                                         {aiLoading?.type === 'summary' ? <Loader2 className="animate-spin w-4 h-4"/> : <Wand2 className="w-4 h-4" />}
                                         {UI_MESSAGES.CV_GENERATOR.AI_SUMMARY_BUTTON}
@@ -312,6 +338,12 @@ const CVGeneratorPage: React.FC = () => {
                     </div>
                 </div>
             </main>
+            <TemplateSelector
+                isOpen={isTemplateBrowserOpen}
+                onClose={() => setIsTemplateBrowserOpen(false)}
+                onSelectTemplate={handleTemplateSelect}
+            />
+            {isTemplateEditorOpen && <TemplateEditor onClose={() => setIsTemplateEditorOpen(false)} onSave={handleSaveNewTemplate} />}
             <Footer />
         </div>
     );

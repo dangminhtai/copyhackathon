@@ -105,17 +105,28 @@ export interface CVProject {
     link?: string;
 }
 
-export interface CVTemplate {
-  id: string;
-  name: string;
-  thumbnailUrl: string;
-  componentName: string;
+export interface CVTemplateStructure {
+    layout: 'classic' | 'modern';
+    sectionOrder: string[];
 }
+
+export interface CVTemplate {
+  _id: string;
+  name: string;
+  description?: string;
+  thumbnailUrl?: string;
+  structure: CVTemplateStructure;
+  createdBy: string | { _id: string; fullName: string };
+  isPublic: boolean;
+  usageCount: number;
+  averageRating: number;
+}
+
 
 export interface CVData {
     _id?: string;
     userId?: string;
-    template: string; // e.g., 'classic', 'modern'
+    template: CVTemplate; // Luôn là object đầy đủ ở client
     personalDetails: {
         fullName: string;
         jobTitle: string;
@@ -129,4 +140,23 @@ export interface CVData {
     experience: CVExperience[];
     skills: CVSkill[];
     projects: CVProject[];
+}
+
+// --- Thêm các interface để export ---
+
+export interface IExploration {
+    _id: string;
+    userId: string;
+    type: 'roadmap' | 'subjects';
+    input: Record<string, any>;
+    results: any[];
+    createdAt: string;
+}
+
+export interface IQuizResult {
+    _id: string;
+    userId: string;
+    history: QuizTurn[];
+    recommendations: QuizRecommendation[];
+    createdAt: string;
 }

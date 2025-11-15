@@ -3,7 +3,7 @@ import apiClient from './apiClient';
 import { CVData, CVTemplate } from '../class/types';
 
 /**
- * Lấy dữ liệu CV của người dùng hiện tại
+ * Lấy dữ liệu CV của người dùng hiện tại (đã populate template)
  */
 export const getCVData = (): Promise<CVData> => {
     return apiClient.get<CVData>('/api/cv');
@@ -13,8 +13,16 @@ export const getCVData = (): Promise<CVData> => {
  * Lưu dữ liệu CV của người dùng hiện tại
  */
 export const saveCVData = (cvData: CVData): Promise<CVData> => {
-    return apiClient.post<CVData>('/api/cv', cvData);
+    // Backend mong đợi templateId, không phải toàn bộ object template
+    const payload = {
+        ...cvData,
+        templateId: cvData.template._id
+    };
+    delete (payload as any).template;
+
+    return apiClient.post<CVData>('/api/cv', payload);
 };
+
 
 /**
  * Gọi AI để tạo tóm tắt CV
@@ -40,6 +48,20 @@ export const rewriteFullCV = (cvData: CVData): Promise<CVData> => {
 /**
  * Lấy danh sách các mẫu CV có sẵn
  */
-export const getCVTemplates = (): Promise<CVTemplate[]> => {
-    return apiClient.get<CVTemplate[]>('/api/cv-templates');
+export const getCVTemplates = (sortBy: 'popularity' | 'rating' | 'newest' = 'popularity'): Promise<CVTemplate[]> => {
+    return apiClient.get<CVTemplate[]>(`/api/cv-templates?sortBy=${sortBy}`);
+};
+
+/**
+ * Tạo một mẫu CV mới
+ */
+export const createCVTemplate = (templateData: Partial<CVTemplate>): Promise<CVTemplate> => {
+    return apiClient.post<CVTemplate>('/api/cv-templates', templateData);
+};
+
+/**
+ * Đánh giá một mẫu CV
+ */
+export const rateCVTemplate = (templateId: string, rating: number): Promise<CVTemplate> => {
+    return apiClient.post<CVTemplate>(`/api/cv-templates/${templateId}/rate`, { rating });
 };

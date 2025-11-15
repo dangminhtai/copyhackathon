@@ -7,7 +7,10 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import DocsPage from './pages/DocsPage';
 import RatingPage from './pages/RatingPage';
-import CVGeneratorPage from './pages/CVGeneratorPage'; // Import trang mới
+import CVGeneratorPage from './pages/CVGeneratorPage';
+import SettingsPage from './pages/SettingsPage';
+import HistoryPage from './pages/HistoryPage';
+import AuthLayout from './layouts/AuthLayout'; // Import layout mới
 import './App.css';
 import { IUser } from './class/types';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -46,10 +49,13 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Navigate to={isLoggedIn ? "/home" : "/login"} />} />
-            <Route path="/register" element={isLoggedIn ? <Navigate to="/home" /> : <RegisterPage />} />
+            <Route 
+              path="/register" 
+              element={isLoggedIn ? <Navigate to="/home" /> : <AuthLayout><RegisterPage /></AuthLayout>} 
+            />
             <Route
               path="/login"
-              element={isLoggedIn ? <Navigate to="/home" /> : <LoginPage onLoginSuccess={handleUserUpdate} />}
+              element={isLoggedIn ? <Navigate to="/home" /> : <AuthLayout><LoginPage onLoginSuccess={handleUserUpdate} /></AuthLayout>}
             />
             <Route
               path="/home"
@@ -58,6 +64,14 @@ function App() {
             <Route
               path="/profile"
               element={isLoggedIn ? <ProfilePage currentUser={currentUser!} onUpdateUser={handleUserUpdate} onLogout={handleLogout} /> : <Navigate to="/login" />}
+            />
+             <Route
+              path="/settings"
+              element={isLoggedIn ? <SettingsPage currentUser={currentUser!} onLogout={handleLogout} /> : <Navigate to="/login" />}
+            />
+             <Route
+              path="/history"
+              element={isLoggedIn ? <HistoryPage currentUser={currentUser!} onLogout={handleLogout} /> : <Navigate to="/login" />}
             />
             <Route
               path="/docs"
